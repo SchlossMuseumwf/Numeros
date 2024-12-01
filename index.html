@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía del Museo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        .instruction {
+            margin-bottom: 30px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .hidden {
+            display: none;
+        }
+        .display {
+            font-size: 24px;
+            border: 2px solid #007BFF;
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 20px auto;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .button {
+            font-size: 20px;
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .back-button {
+            background-color: #FF0000;
+        }
+        .back-button:hover {
+            background-color: #CC0000;
+        }
+        .link-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .play-button, .back-link {
+            padding: 8px 16px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .play-button:hover {
+            background-color: #218838;
+        }
+        .back-link {
+            background-color: #ffc107;
+            color: black;
+        }
+        .back-link:hover {
+            background-color: #e0a800;
+        }
+        #audio-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p id="instruction" class="instruction">
+            Estimado visitante, en cada sala encontrará números que le guiarán hacia explicaciones sobre las instalaciones, los objetos expuestos y su contexto histórico. 
+            Seleccione el número correspondiente y luego presione el botón de reproducción.
+        </p>
+        <div id="display" class="display">0</div>
+        <div id="audio-title">Por favor, seleccione un número</div>
+        <audio id="audio-player" controls style="width: 100%; max-width: 600px; display: none; margin: 20px auto;" controlslist="nodownload">
+            Su navegador no admite el reproductor de audio.
+        </audio>
+        <div class="button-container">
+            <button class="button" onclick="addNumber(1)">1</button>
+            <button class="button" onclick="addNumber(2)">2</button>
+            <button class="button" onclick="addNumber(3)">3</button>
+            <button class="button" onclick="addNumber(4)">4</button>
+            <button class="button" onclick="addNumber(5)">5</button>
+            <button class="button" onclick="addNumber(6)">6</button>
+            <button class="button" onclick="addNumber(7)">7</button>
+            <button class="button" onclick="addNumber(8)">8</button>
+            <button class="button" onclick="addNumber(9)">9</button>
+            <button class="button" onclick="addNumber(0)">0</button>
+            <button class="button back-button" onclick="removeLast()">←</button>
+        </div>
+        <div class="link-container">
+            <a id="back-link" href="https://schlossmuseumwf.github.io/willkommen/" class="back-link">Volver a la selección de idioma</a>
+            <a id="play-button" href="#" class="play-button" onclick="playAudio()">Reproducir</a>
+        </div>
+    </div>
+
+    <script>
+        let currentNumber = '';
+        const titlesUrl = "https://schlossmuseumwf.github.io/audio/titles.json";
+        let titles = {};
+
+        // Cargar datos JSON
+        fetch(titlesUrl)
+            .then(response => response.json())
+            .then(data => {
+                titles = data;
+                console.log("Datos JSON cargados:", titles); // Depuración
+            })
+            .catch(error => {
+                console.error("Error al cargar titles.json:", error);
+            });
+
+        // Mostrar u ocultar los encabezados
+        function toggleHeader(show) {
+            const instruction = document.getElementById('instruction');
+            const audioTitle = document.getElementById('audio-title');
+            if (show) {
+                instruction.classList.remove('hidden');
+                audioTitle.classList.remove('hidden');
+            } else {
+                instruction.classList.add('hidden');
+                audioTitle.classList.add('hidden');
+            }
+        }
+
+        // Añadir un número
+        function addNumber(num) {
+            if (currentNumber.length < 5) {
+                currentNumber += num;
+                document.getElementById('display').textContent = currentNumber || '0';
+                toggleHeader(false); // Ocultar encabezado
+            }
+        }
+
+        // Eliminar el último dígito
+        function removeLast() {
+            currentNumber = currentNumber.slice(0, -1);
+            document.getElementById('display').textContent = currentNumber || '0';
+            if (!currentNumber) {
+                toggleHeader(true); // Mostrar encabezado
+            }
+        }
+
+        // Reproducir audio
+        function playAudio() {
+            if (currentNumber) {
+                const language = 'es'; // Idioma español
+                const audioUrl = `https://schlossmuseumwf.github.io/audio/mp3/${language}/${currentNumber}.mp3`;
+                const audioPlayer = document.getElementById('audio-player');
+                const audioTitle = document.getElementById('audio-title');
+
+                // Obtener el título para el número actual
+                const numericNumber = parseInt(currentNumber, 10);
+                console.log("Número actual:", numericNumber); // Depuración
+                const title = titles[language] && titles[language][numericNumber];
+                console.log("Título encontrado:", title); // Depuración
+
+                if (title) {
+                    console.log("Antes de actualizar:", audioTitle.textContent); // Depuración
+                    audioTitle.textContent = title;
+                    audioTitle.style.display = 'block'; // Asegurarse de que sea visible
+                    console.log("Después de actualizar:", audioTitle.textContent); // Depuración
+                } else {
+                    console.error(`Título para el número ${currentNumber} en el idioma ${language} no encontrado.`);
+                    audioTitle.textContent = `Número de audio: ${currentNumber}`;
+                }
+
+                // Reproducir archivo de audio
+                audioPlayer.src = audioUrl;
+                audioPlayer.style.display = 'block';
+                audioPlayer.play();
+            } else {
+                alert("Por favor, introduzca un número antes de presionar 'Reproducir'.");
+            }
+        }
+    </script>
+</body>
+</html>
