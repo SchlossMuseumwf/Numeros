@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guide du Musée</title>
+    <title>Guía del Museo</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -107,13 +107,13 @@
 <body>
     <div class="container">
         <p id="instruction" class="instruction">
-            Cher visiteur, dans chaque pièce, vous trouverez des numéros qui vous guideront vers des explications sur les lieux, les objets exposés et leur contexte historique. 
-            Sélectionnez le numéro approprié, puis appuyez sur le bouton Lecture.
+            Estimado visitante, en cada sala encontrará números que le guiarán hacia explicaciones sobre las instalaciones, los objetos expuestos y su contexto histórico. 
+            Seleccione el número correspondiente y luego presione el botón de reproducción.
         </p>
         <div id="display" class="display">0</div>
-        <div id="audio-title">Veuillez sélectionner un numéro</div>
+        <div id="audio-title">Por favor, seleccione un número</div>
         <audio id="audio-player" controls style="width: 100%; max-width: 600px; display: none; margin: 20px auto;" controlslist="nodownload">
-            Votre navigateur ne prend pas en charge le lecteur audio.
+            Su navegador no admite el reproductor de audio.
         </audio>
         <div class="button-container">
             <button class="button" onclick="addNumber(1)">1</button>
@@ -130,7 +130,7 @@
             <button id="play-button" class="play-button" onclick="playAudio()">▶</button>
         </div>
         <div class="link-container">
-            <a id="back-link" href="https://schlossmuseumwf.github.io/willkommen/" class="back-link">Retour à la sélection de la langue</a>
+            <a id="back-link" href="https://schlossmuseumwf.github.io/willkommen/" class="back-link">Volver a la selección de idioma</a>
         </div>
     </div>
 
@@ -143,10 +143,10 @@
             .then(response => response.json())
             .then(data => {
                 titles = data;
-                console.log("Données JSON chargées :", titles);
+                console.log("Datos JSON cargados:", titles);
             })
             .catch(error => {
-                console.error("Erreur lors du chargement de titles.json :", error);
+                console.error("Error al cargar titles.json:", error);
             });
 
         function toggleHeader(show) {
@@ -179,7 +179,7 @@
 
         function playAudio() {
             if (currentNumber) {
-                const language = 'fr'; 
+                const language = 'es';
                 const audioUrl = `https://schlossmuseumwf.github.io/audio/mp3/${language}/${currentNumber}.mp3`;
                 const audioPlayer = document.getElementById('audio-player');
                 const audioTitle = document.getElementById('audio-title');
@@ -191,14 +191,14 @@
                     audioTitle.textContent = title;
                     audioTitle.style.display = 'block';
                 } else {
-                    audioTitle.textContent = `Numéro audio : ${currentNumber}`;
+                    audioTitle.textContent = `Número de audio: ${currentNumber}`;
                 }
 
                 audioPlayer.src = audioUrl;
                 audioPlayer.style.display = 'block';
                 audioPlayer.play();
             } else {
-                alert("Veuillez entrer un numéro avant d'appuyer sur Lecture.");
+                alert("Por favor, introduzca un número antes de presionar 'Reproducir'.");
             }
         }
     </script>
