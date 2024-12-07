@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía del Museo</title>
+    <title>Guide du Musée</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -59,6 +59,19 @@
         .back-button:hover {
             background-color: #CC0000;
         }
+        .play-button {
+            font-size: 20px;
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        .play-button:hover {
+            background-color: #218838;
+        }
         .link-container {
             display: flex;
             justify-content: center;
@@ -66,25 +79,19 @@
             gap: 15px;
             margin-top: 20px;
         }
-        .play-button, .back-link {
-            padding: 8px 16px;
+        .back-link {
             font-size: 16px;
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
+            padding: 8px 16px;
+            border: none;
             border-radius: 5px;
+            background-color: #ffc107;
+            color: black;
+            text-decoration: none;
             cursor: pointer;
             height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .play-button:hover {
-            background-color: #218838;
-        }
-        .back-link {
-            background-color: #ffc107;
-            color: black;
         }
         .back-link:hover {
             background-color: #e0a800;
@@ -100,13 +107,13 @@
 <body>
     <div class="container">
         <p id="instruction" class="instruction">
-            Estimado visitante, en cada sala encontrará números que le guiarán hacia explicaciones sobre las instalaciones, los objetos expuestos y su contexto histórico. 
-            Seleccione el número correspondiente y luego presione el botón de reproducción.
+            Cher visiteur, dans chaque pièce, vous trouverez des numéros qui vous guideront vers des explications sur les lieux, les objets exposés et leur contexte historique. 
+            Sélectionnez le numéro approprié, puis appuyez sur le bouton Lecture.
         </p>
         <div id="display" class="display">0</div>
-        <div id="audio-title">Por favor, seleccione un número</div>
+        <div id="audio-title">Veuillez sélectionner un numéro</div>
         <audio id="audio-player" controls style="width: 100%; max-width: 600px; display: none; margin: 20px auto;" controlslist="nodownload">
-            Su navegador no admite el reproductor de audio.
+            Votre navigateur ne prend pas en charge le lecteur audio.
         </audio>
         <div class="button-container">
             <button class="button" onclick="addNumber(1)">1</button>
@@ -120,10 +127,10 @@
             <button class="button" onclick="addNumber(9)">9</button>
             <button class="button" onclick="addNumber(0)">0</button>
             <button class="button back-button" onclick="removeLast()">←</button>
+            <button id="play-button" class="play-button" onclick="playAudio()">▶</button>
         </div>
         <div class="link-container">
-            <a id="back-link" href="https://schlossmuseumwf.github.io/willkommen/" class="back-link">Volver a la selección de idioma</a>
-            <a id="play-button" href="#" class="play-button" onclick="playAudio()">Play</a>
+            <a id="back-link" href="https://schlossmuseumwf.github.io/willkommen/" class="back-link">Retour à la sélection de la langue</a>
         </div>
     </div>
 
@@ -132,18 +139,16 @@
         const titlesUrl = "https://schlossmuseumwf.github.io/audio/titles.json";
         let titles = {};
 
-        // Cargar datos JSON
         fetch(titlesUrl)
             .then(response => response.json())
             .then(data => {
                 titles = data;
-                console.log("Datos JSON cargados:", titles); // Depuración
+                console.log("Données JSON chargées :", titles);
             })
             .catch(error => {
-                console.error("Error al cargar titles.json:", error);
+                console.error("Erreur lors du chargement de titles.json :", error);
             });
 
-        // Mostrar u ocultar los encabezados
         function toggleHeader(show) {
             const instruction = document.getElementById('instruction');
             const audioTitle = document.getElementById('audio-title');
@@ -156,54 +161,44 @@
             }
         }
 
-        // Añadir un número
         function addNumber(num) {
             if (currentNumber.length < 5) {
                 currentNumber += num;
                 document.getElementById('display').textContent = currentNumber || '0';
-                toggleHeader(false); // Ocultar encabezado
+                toggleHeader(false);
             }
         }
 
-        // Eliminar el último dígito
         function removeLast() {
             currentNumber = currentNumber.slice(0, -1);
             document.getElementById('display').textContent = currentNumber || '0';
             if (!currentNumber) {
-                toggleHeader(true); // Mostrar encabezado
+                toggleHeader(true);
             }
         }
 
-        // Reproducir audio
         function playAudio() {
             if (currentNumber) {
-                const language = 'es'; // Idioma español
+                const language = 'fr'; 
                 const audioUrl = `https://schlossmuseumwf.github.io/audio/mp3/${language}/${currentNumber}.mp3`;
                 const audioPlayer = document.getElementById('audio-player');
                 const audioTitle = document.getElementById('audio-title');
 
-                // Obtener el título para el número actual
                 const numericNumber = parseInt(currentNumber, 10);
-                console.log("Número actual:", numericNumber); // Depuración
                 const title = titles[language] && titles[language][numericNumber];
-                console.log("Título encontrado:", title); // Depuración
 
                 if (title) {
-                    console.log("Antes de actualizar:", audioTitle.textContent); // Depuración
                     audioTitle.textContent = title;
-                    audioTitle.style.display = 'block'; // Asegurarse de que sea visible
-                    console.log("Después de actualizar:", audioTitle.textContent); // Depuración
+                    audioTitle.style.display = 'block';
                 } else {
-                    console.error(`Título para el número ${currentNumber} en el idioma ${language} no encontrado.`);
-                    audioTitle.textContent = `Número de audio: ${currentNumber}`;
+                    audioTitle.textContent = `Numéro audio : ${currentNumber}`;
                 }
 
-                // Reproducir archivo de audio
                 audioPlayer.src = audioUrl;
                 audioPlayer.style.display = 'block';
                 audioPlayer.play();
             } else {
-                alert("Por favor, introduzca un número antes de presionar 'Reproducir'.");
+                alert("Veuillez entrer un numéro avant d'appuyer sur Lecture.");
             }
         }
     </script>
